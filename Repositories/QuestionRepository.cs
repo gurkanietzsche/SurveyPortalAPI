@@ -22,7 +22,12 @@ public class QuestionRepository
         _context.Entry(question).State = EntityState.Modified;
         await _context.SaveChangesAsync();
     }
-
+    public async Task<Question> GetQuestionByIdAsync(int id)
+    {
+        return await _context.Questions
+            .Include(q => q.Options)
+            .FirstOrDefaultAsync(q => q.Id == id);
+    }
     public async Task DeleteQuestionAsync(int id)
     {
         var question = await _context.Questions.FindAsync(id);
@@ -32,7 +37,13 @@ public class QuestionRepository
             await _context.SaveChangesAsync();
         }
     }
-
+    public class UpdateQuestionDTO
+    {
+        public string Text { get; set; }
+        public QuestionType Type { get; set; }
+        public bool IsRequired { get; set; }
+        public int Order { get; set; }
+    }
     public async Task<IEnumerable<Question>> GetQuestionsBySurveyIdAsync(int surveyId)
     {
         return await _context.Questions
